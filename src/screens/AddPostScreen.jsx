@@ -8,14 +8,16 @@ import {
   ToastAndroid,
 } from "react-native";
 import { app } from "../../firebaseConfig";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Formik } from "formik";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 export default function AddPostScreen() {
   const [image, setImage] = useState(null);
+  const storage = getStorage();
   const db = getFirestore(app);
   const [categoryList, setCategoryList] = useState([]);
 
@@ -49,7 +51,26 @@ export default function AddPostScreen() {
     }
   };
 
-  const onSubmitMethod = (value) => (value.image = image);
+  const onSubmitMethod = async (value) => {
+    const response = await fetch(image);
+    const blob = await response.blob();
+    const storageRef = ref(storage, "communityPost/" + Date.now() + ".jpg");
+    uploadBytes(storageRef, blob)
+      .then((snapshot) => {
+        console.log("Uploaded a blob or file!");
+      })
+      .then((response) => {
+        getDownloadURL(storageRef).then(async (downloadUrl) => {
+          console.log(downloadUrl);
+          value.image = downloadUrl;
+
+          const docRef = await addDoc(collection(db, "UserPost"), value);
+          if (docRef.id) {
+            console.log("Doc Added!");
+          }
+        });
+      });
+  };
 
   return (
     <View className="p-10">
@@ -59,7 +80,7 @@ export default function AddPostScreen() {
       </Text>
       <Formik
         initialValues={{
-          name: "",
+          title: "",
           desc: "",
           category: "",
           address: "",
