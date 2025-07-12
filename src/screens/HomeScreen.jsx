@@ -1,10 +1,12 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { SafeAreaView, View } from "react-native";
+import Header from "../components/HomeScreen/Header";
 
 export default function HomeScreen() {
   return (
-    <View>
-      <Text>HomeScreen</Text>
-    </View>
+    <SafeAreaView>
+      <View className="py-8 px-6 bg-white flex flex-1">
+        <Header />
+      </View>
+    </SafeAreaView>
   );
 }
