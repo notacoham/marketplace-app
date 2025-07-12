@@ -17,7 +17,7 @@ export default function Header() {
         </View>
       </View>
 
-      <View className="flex flex-row items-center gap-2 p-3 border-[1px] border-blue-500 bg-white rounded-full px-5 mt-5">
+      <View className="flex flex-row items-center gap-2 p-[20px] border-[1px] border-blue-200 bg-blue-50 rounded-full px-5 mt-5">
         <Ionicons name="search" size={24} color="gray" />
         <TextInput
           placeholder="Search"
