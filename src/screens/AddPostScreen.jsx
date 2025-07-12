@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   ScrollView,
   SafeAreaView,
+  KeyboardAvoidingView,
 } from "react-native";
 import { app } from "../../firebaseConfig";
 import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
@@ -86,126 +87,129 @@ export default function AddPostScreen() {
 
   return (
     <SafeAreaView>
-      <ScrollView className="p-10">
-        <Text className="text-[27px] font-bold">Add New Post</Text>
-        <Text className="text-[18px] text-gray-500 mb-7">
-          Create New Post and Start Selling
-        </Text>
-        <Formik
-          initialValues={{
-            title: "",
-            desc: "",
-            category: "",
-            address: "",
-            price: "",
-            image: "",
-            userName: "",
-            userEmail: "",
-            userImage: "",
-          }}
-          onSubmit={(value) => onSubmitMethod(value)}
-          validate={(values) => {
-            const errors = {};
-            if (!values.title) {
-              console.log("Title not present");
-              ToastAndroid.show("You must have a title", ToastAndroid.SHORT);
+      <KeyboardAvoidingView>
+        <ScrollView className="p-10">
+          <Text className="text-[27px] font-bold">Add New Post</Text>
+          <Text className="text-[18px] text-gray-500 mb-7">
+            Create New Post and Start Selling
+          </Text>
+          <Formik
+            initialValues={{
+              title: "",
+              desc: "",
+              category: "",
+              address: "",
+              price: "",
+              image: "",
+              userName: "",
+              userEmail: "",
+              userImage: "",
+              createdAt: Date.now(),
+            }}
+            onSubmit={(value) => onSubmitMethod(value)}
+            validate={(values) => {
+              const errors = {};
+              if (!values.title) {
+                console.log("Title not present");
+                ToastAndroid.show("You must have a title", ToastAndroid.SHORT);
 
-              errors.name = "Title not Present";
-            }
-            return errors;
-          }}
-        >
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            setFieldValue,
-            errors,
-          }) => {
-            return (
-              <View>
-                <TouchableOpacity onPress={pickImage}>
-                  {image ? (
-                    <Image
-                      source={{ uri: image }}
-                      style={{ width: 100, height: 100, borderRadius: 15 }}
-                    />
-                  ) : (
-                    <Image
-                      style={{ width: 100, height: 100, borderRadius: 15 }}
-                      source={require("../../assets/images/placeholder.jpg")}
-                    />
-                  )}
-                </TouchableOpacity>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Title"
-                  value={values?.title}
-                  onChangeText={handleChange("title")}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Description"
-                  value={values?.desc}
-                  numberOfLines={5}
-                  onChangeText={handleChange("desc")}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Price"
-                  value={values?.price}
-                  keyboardType="numeric"
-                  onChangeText={handleChange("price")}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Address"
-                  value={values?.address}
-                  onChangeText={handleChange("address")}
-                />
-                {/* Category List Dropdown */}
-                <View
-                  style={{ borderWidth: 1, borderRadius: 10, marginTop: 15 }}
-                >
-                  <Picker
-                    className="border-2"
-                    selectedValue={values?.category}
-                    onValueChange={(itemValue) =>
-                      setFieldValue("category", itemValue)
-                    }
+                errors.name = "Title not Present";
+              }
+              return errors;
+            }}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              setFieldValue,
+              errors,
+            }) => {
+              return (
+                <View>
+                  <TouchableOpacity onPress={pickImage}>
+                    {image ? (
+                      <Image
+                        source={{ uri: image }}
+                        style={{ width: 100, height: 100, borderRadius: 15 }}
+                      />
+                    ) : (
+                      <Image
+                        style={{ width: 100, height: 100, borderRadius: 15 }}
+                        source={require("../../assets/images/placeholder.jpg")}
+                      />
+                    )}
+                  </TouchableOpacity>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Title"
+                    value={values?.title}
+                    onChangeText={handleChange("title")}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Description"
+                    value={values?.desc}
+                    numberOfLines={5}
+                    onChangeText={handleChange("desc")}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Price"
+                    value={values?.price}
+                    keyboardType="numeric"
+                    onChangeText={handleChange("price")}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Address"
+                    value={values?.address}
+                    onChangeText={handleChange("address")}
+                  />
+                  {/* Category List Dropdown */}
+                  <View
+                    style={{ borderWidth: 1, borderRadius: 10, marginTop: 15 }}
                   >
-                    {categoryList &&
-                      categoryList.map((item, index) => {
-                        return (
-                          <Picker.Item
-                            key={index}
-                            label={item?.name}
-                            value={item?.name}
-                          />
-                        );
-                      })}
-                  </Picker>
+                    <Picker
+                      className="border-2"
+                      selectedValue={values?.category}
+                      onValueChange={(itemValue) =>
+                        setFieldValue("category", itemValue)
+                      }
+                    >
+                      {categoryList &&
+                        categoryList.map((item, index) => {
+                          return (
+                            <Picker.Item
+                              key={index}
+                              label={item?.name}
+                              value={item?.name}
+                            />
+                          );
+                        })}
+                    </Picker>
+                  </View>
+                  <TouchableOpacity
+                    onPress={handleSubmit}
+                    className="p-4 bg-blue-500 rounded-full mt-5 mb-5"
+                    style={{ backgroundColor: loading ? "#ccc" : "#007BFF" }}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text className="text-white text-center text-[16px] ">
+                        Submit
+                      </Text>
+                    )}
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  onPress={handleSubmit}
-                  className="p-4 bg-blue-500 rounded-full mt-5 mb-5"
-                  style={{ backgroundColor: loading ? "#ccc" : "#007BFF" }}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text className="text-white text-center text-[16px] ">
-                      Submit
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              </View>
-            );
-          }}
-        </Formik>
-      </ScrollView>
+              );
+            }}
+          </Formik>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
